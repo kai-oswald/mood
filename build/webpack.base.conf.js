@@ -38,13 +38,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [{
-            loader: "style-loader"
-          },
-          {
-            loader: "css-loader"
-          }
-        ]
+         include: [
+                    path.resolve(__dirname, "not_exist_path")
+                ],
+        loader: 'style-loader!css-loader'
 
       },
       {
