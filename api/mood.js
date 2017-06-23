@@ -11,9 +11,9 @@ var client = new Twitter(config.twitter);
  * @param {Function} cb the callback function
  */
 exports.getTweets = function (userName, cb) {
-    client.get("/statuses/user_timeline/" + userName + ".json?screen_name=" + userName + "&include_rts=false", function (err, tweets, res) {
-        cb(err, tweets);
-    });
+  client.get("/statuses/user_timeline/" + userName + ".json?screen_name=" + userName + "&include_rts=false", function (err, tweets, res) {
+    cb(err, tweets);
+  });
 }
 
 /**
@@ -23,39 +23,46 @@ exports.getTweets = function (userName, cb) {
  * @param {Function} cb the callback function
  */
 exports.getMood = function (userName, cb) {
-    console.log("getting mood for " + userName);
-    this.getTweets(userName, function (err, tweets) {
-        if (!err) {
-            var parsedTweets = parseTweets(tweets);
-            var sentiments = getSentiments(parsedTweets);
-            var mood = {
-                average: exports.getAverage(sentiments),
-                mostPositive: exports.getMostPositive(sentiments),
-                mostNegative: exports.getMostNegative(sentiments)
-            }
-        }
-        cb(err, mood);
-    });
+  console.log("getting mood for " + userName);
+  this.getTweets(userName, function (err, tweets) {
+    if (!err) {
+      var parsedTweets = parseTweets(tweets);
+      var sentiments = getSentiments(parsedTweets);
+      var mood = {
+        average: exports.getAverage(sentiments),
+        mostPositive: exports.getMostPositive(sentiments),
+        mostNegative: exports.getMostNegative(sentiments),
+        timeline: exports.getTimeline(parsedTweets)
+      }
+    }
+    cb(err, mood);
+  });
 }
 
 function parseTweets(tweets) {
-    var parsedTweets = [];
-    tweets.forEach(function (tweet) {
-        parsedTweets.push(tweet.text);
-    })
-    return parsedTweets;
+  var parsedTweets = [];
+  tweets.forEach(function (tweet) {
+    var reducedTweet = {
+      text: tweet.text,
+      date: tweet.created_at,
+      retweet_count: tweet.retweet_count,
+      favorite_count: tweet.favorite_count
+    }
+    parsedTweets.push(reducedTweet);
+  })
+  return parsedTweets;
 }
 
-function getSentiments(texts) {
-    var combined = [];
-    texts.forEach(function (text) {
-        var combine = {
-            score: sentiment(text).score,
-            tweet: text
-        };
-        combined.push(combine);
-    });
-    return combined;
+function getSentiments(tweets) {
+  var combined = [];
+  tweets.forEach(function (tweet) {
+    var combine = {
+      score: sentiment(tweet.text).score,
+      tweet: tweet
+    };
+    combined.push(combine);
+  });
+  return combined;
 }
 /**
  * get sentiments for tweets by twitter username
@@ -64,13 +71,13 @@ function getSentiments(texts) {
  * @param {Function} cb the callback function
  */
 exports.getSentiments = function (userName, cb) {
-    this.getTweets(userName, function (err, tweets) {
-        if (!err) {
-            var parsedTweets = parseTweets(tweets);
-            var sentiments = getSentiments(parsedTweets);
-        }
-        cb(err, sentiments);
-    });
+  this.getTweets(userName, function (err, tweets) {
+    if (!err) {
+      var parsedTweets = parseTweets(tweets);
+      var sentiments = getSentiments(parsedTweets);
+    }
+    cb(err, sentiments);
+  });
 }
 
 /**
@@ -79,14 +86,14 @@ exports.getSentiments = function (userName, cb) {
  * @returns the average score
  */
 exports.getAverage = function (sentiments) {
-    if (sentiments.length === 0) {
-        return 0;
-    }
-    var total = 0;
-    sentiments.forEach(function (sentiment) {
-        total += sentiment.score;
-    });
-    return Math.round((total / sentiments.length) * 100) / 100;
+  if (sentiments.length === 0) {
+    return 0;
+  }
+  var total = 0;
+  sentiments.forEach(function (sentiment) {
+    total += sentiment.score;
+  });
+  return Math.round((total / sentiments.length) * 100) / 100;
 }
 
 /**
@@ -96,16 +103,16 @@ exports.getAverage = function (sentiments) {
  * @returns the most positive sentiment in the given array
  */
 exports.getMostPositive = function (sentiments) {
-    var mostPositive;
-    sentiments.forEach(function (sentiment) {
-        if (!mostPositive) {
-            mostPositive = sentiment;
-        }
-        if (sentiment.score > mostPositive.score) {
-            mostPositive = sentiment;
-        }
-    });
-    return mostPositive;
+  var mostPositive;
+  sentiments.forEach(function (sentiment) {
+    if (!mostPositive) {
+      mostPositive = sentiment;
+    }
+    if (sentiment.score > mostPositive.score) {
+      mostPositive = sentiment;
+    }
+  });
+  return mostPositive;
 
 }
 
@@ -116,14 +123,27 @@ exports.getMostPositive = function (sentiments) {
  * @returns the most negative sentiment in the given array
  */
 exports.getMostNegative = function (sentiments) {
-    var mostNegative;
-    sentiments.forEach(function (sentiment) {
-        if (!mostNegative) {
-            mostNegative = sentiment;
-        }
-        if (sentiment.score < mostNegative.score) {
-            mostNegative = sentiment;
-        }
-    });
-    return mostNegative;
+  var mostNegative;
+  sentiments.forEach(function (sentiment) {
+    if (!mostNegative) {
+      mostNegative = sentiment;
+    }
+    if (sentiment.score < mostNegative.score) {
+      mostNegative = sentiment;
+    }
+  });
+  return mostNegative;
+}
+
+exports.getTimeline = function (tweets) {
+  // score + date
+  var timeline = [];
+  tweets.forEach(function (tweet) {
+    var scoreAtDate = {
+      score: sentiment(tweet.text).score,
+      date: tweet.date
+    }
+    timeline.push(scoreAtDate);
+  });
+  return timeline;
 }
