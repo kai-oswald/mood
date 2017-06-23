@@ -1,8 +1,9 @@
 # mood2
 
-> A Vue.js project
+> sentiment analysis based on tweets build with vue.js
 
 ## Build Setup
+twitter auth via ```api/config.js``` 
 
 ``` bash
 # install dependencies
