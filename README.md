@@ -1,6 +1,6 @@
-# mood2
+# mood
 
-> sentiment analysis based on tweets build with vue.js
+> tweet sentiment analysis build with node and vue
 
 ## Build Setup
 twitter auth via ```api/config.js``` 
