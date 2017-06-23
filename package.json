@@ -5,7 +5,7 @@
   "author": "kai-oswald <kaos1910@gmail.com>",
   "private": true,
   "scripts": {
-    "dev": "node build/dev-server.js",
+    "dev": "nodemon build/dev-server.js",
     "start": "node build/dev-server.js",
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
@@ -14,6 +14,8 @@
   "dependencies": {
     "bulma": "^0.4.2",
     "font-awesome": "^4.7.0",
+    "sentiment": "^4.0.0",
+    "twitter": "^1.7.1",
     "vue": "^2.3.3",
     "vue-router": "^2.3.1"
   },
