@@ -9,10 +9,10 @@
             </h1>
             <div class="field">
               <p class="control">
-                <input class="input" type="text" placeholder="@realdonaldtrump">
+                <input v-on:keyup="keyUp" v-model="user" class="input" type="text" placeholder="@realdonaldtrump">
               </p>
             </div>
-            <a class="button is-primary is-fullwidth">Get in the mood</a>
+            <a v-on:click="getMood" class="button is-primary is-fullwidth">Get in the mood</a>
           </div>
         </div>
       </div>
@@ -21,7 +21,27 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    data() {
+      return {
+        user: ''
+      }
+    },
+    methods: {
+      getMood: function () {
+        rq.get("/api/" + this.user).then(function(res) {
+          // Load the details page
+        }).catch(function(err) {
+          // TODO: Errorhandling
+        });
+      },
+      keyUp: function(e) {
+        if(e.key === "Enter") {
+          this.getMood();
+        }
+      }
+    }
+  }
 
 </script>
 <style scoped>
