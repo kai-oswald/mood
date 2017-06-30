@@ -8,6 +8,8 @@
           <TweetDetail :mood="mostPositive" type="positive"></TweetDetail>
           <hr>
           <TweetDetail :mood="mostNegative" type="negative"></TweetDetail>
+          <hr>
+          <Timeline :timeline="timeline" :user="user"></Timeline>
         </div>
       </div>
     </section>
@@ -17,14 +19,24 @@
 <script>
 import Average from "./Average";
 import TweetDetail from "./TweetDetail";
+import Timeline from "./Timeline";
 
+function TweetPlaceholder() {
+  this.score = 0;
+  this.tweet = {
+    text: "loading..",
+    date: new Date(),
+    favorite_count: 0,
+    retweet_count: 0
+  }
+}
   export default {
     data() {
       return {
         user: this.$route.params.username,
         avg: 0,
-        mostPositive: {},
-        mostNegative: {},
+        mostPositive: new TweetPlaceholder(),
+        mostNegative: new TweetPlaceholder(),
         timeline: {}
       }
     },
@@ -40,8 +52,8 @@ import TweetDetail from "./TweetDetail";
         self.mostNegative = res.mostNegative;
         self.timeline = res.timeline;
       }
-    },
-    components: { Average, TweetDetail }
+    },     
+    components: { Average, TweetDetail, Timeline }
   }
 
 </script>
