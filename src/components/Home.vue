@@ -39,20 +39,20 @@
     methods: {
       validateUser: function () {
         var self = this;
-        rq.get("/api/" + this.user).then(handleResponse).catch(function (err) {
-          // TODO: Errorhandling     
+        rq.get("api/" + self.user).then(handleResponse).catch(function(err) {        
+          // TODO: Errorhandling  
           console.log(err);     
           self.error = true;
           self.errorMsg = err;
         });
 
         function handleResponse(res) {
-          if (res[0]) {
+          if (typeof res[0] === "object" && res[0]) {
             self.error = true;            
             self.errorMsg = res[0].message;
           } else {
             self.error = false;
-            self.$router.push({ path: 'details/' + self.user });
+            self.$router.push({ name: "Detail", params: { username: self.user } });
           }
         }
       },
