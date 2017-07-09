@@ -1,12 +1,11 @@
 <template>
   <div>
-    <highcharts :options="options"></highcharts>
+    <highcharts :options="options" ref="highcharts"></highcharts>
+    <button @click="update">update credits</button>
   </div>
 </template>
 
 <script>
-var moment = require("moment");
-console.log("moment " + moment);
   export default {
     name: "Timeline",
     props: ["timeline", "user"],
@@ -47,50 +46,20 @@ console.log("moment " + moment);
             verticalAlign: 'middle',
             borderWidth: 0
           },
-          series: [{
-            name: 'temp_name',
-            data: []
-          }]
+          series: []
         }
       }
     },
     created: function () {
-      this.options.series = [{
-        name: this.user,
-        data: this.getHighData()
-      }]
-      // [{ name: "temp_2", data: [["c", 13], ["d", 6]]}]
-    },
-    watch: {
-      highData: function () {
-        if (this.timeline.length > 0) {
-          var data = [];
-          this.timeline.forEach(function (entry) {
-            data.push([entry.date, entry.score]);
-          });
-          return data;
-        }
-      }
+      setTimeout(this.update, 300);
     },
     methods: {
-      getHighData: function () {
-        if (this.timeline.length > 0) {
-          var data = [];
-          this.timeline.forEach(function (entry) {
-            var tweetDate = entry.date;
-            // var date = moment(tweetDate, 'dd MMM DD HH:mm:ss ZZ YYYY', 'en');
-            var date = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("DD.MM.YYYY");
-            var newD = new Date(date);
-            console.log(newD);
-            var y = newD.getFullYear();
-            var d = newD.getDate();
-            var m = newD.getMonth();
-            // var date = Date.UTC(utc.year(), utc.m, 21)
-            // var date = tweetDate;
-            data.push([Date.UTC(y, m, d), entry.score]);
-          });         
-         return data;
+      update: function () {
+        var obj = {
+          name: this.user,
+          data: this.timeline
         }
+        this.options.series.push(obj);
       }
     }
   }

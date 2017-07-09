@@ -1,7 +1,7 @@
 var Twitter = require("twitter");
 var sentiment = require("sentiment");
 var config = require("./config");
-
+var moment = require("moment");
 var client = new Twitter(config.twitter);
 
 /**
@@ -63,6 +63,22 @@ function getSentiments(tweets) {
     combined.push(combine);
   });
   return combined;
+}
+
+function formatTimeline(timeline) {
+  if (timeline.length > 0) {
+    var data = [];
+    timeline.forEach(function (entry) {
+      var tweetDate = entry.date;
+      var date = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("DD.MM.YYYY");
+      var newD = new Date(date);
+      var y = newD.getFullYear();
+      var d = newD.getDate();
+      var m = newD.getMonth();
+      data.push([Date.UTC(y, m, d), entry.score]);
+    });
+    return data;
+  }
 }
 /**
  * get sentiments for tweets by twitter username
@@ -145,5 +161,5 @@ exports.getTimeline = function (tweets) {
     }
     timeline.push(scoreAtDate);
   });
-  return timeline;
+  return formatTimeline(timeline);
 }
