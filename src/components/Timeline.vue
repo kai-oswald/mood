@@ -1,7 +1,6 @@
 <template>
   <div>
-    <highcharts :options="options" ref="highcharts"></highcharts>
-    <button @click="update">update credits</button>
+    <highcharts :options="highoptions" ref="highcharts"></highcharts>
   </div>
 </template>
 
@@ -11,14 +10,28 @@
     props: ["timeline", "user"],
     data() {
       return {
-        options: {
+        highoptions: {}
+      }
+    },
+    created: function () {
+      var self = this;
+      if (this.timeline.length > 0) {
+        this.highoptions = this.initOptions();
+      } else {
+        var interval = setInterval(() => {   
+          if (this.timeline.length > 0) {
+            self.highoptions = this.initOptions();
+            clearInterval(interval);
+          }
+        }, 500)
+      }
+    },
+    methods: {
+      initOptions: function (cb) {
+        var options = {
           title: {
             text: 'Timeline',
-            x: -20 //center
-          },
-          subtitle: {
-            text: 'mood score timeline for ' + this.user,
-            x: -20
+            x: -25
           },
           xAxis: {
             type: 'datetime',
@@ -46,20 +59,12 @@
             verticalAlign: 'middle',
             borderWidth: 0
           },
-          series: []
-        }
-      }
-    },
-    created: function () {
-      setTimeout(this.update, 300);
-    },
-    methods: {
-      update: function () {
-        var obj = {
-          name: this.user,
-          data: this.timeline
-        }
-        this.options.series.push(obj);
+          series: [{
+            name: this.user,
+            data: this.timeline
+          }]
+        };
+        return options;
       }
     }
   }
