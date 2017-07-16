@@ -70,13 +70,41 @@ function formatTimeline(timeline) {
     var data = [];
     timeline.forEach(function (entry) {
       var tweetDate = entry.date;
-      var date = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("DD.MM.YYYY");
-      var newD = new Date(date);
-      var y = newD.getFullYear();
-      var d = newD.getDate();
-      var m = newD.getMonth();
-      data.push([Date.UTC(y, m, d), entry.score]);
+      var year = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("DD");
+      var month = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("MM");
+      var day = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("YYYY");
+      var hour = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("HH");
+      var minute = moment(tweetDate, "dd MMM DD HH:mm:ss ZZ YYYY", "en").format("mm");
+      data.push([Date.UTC(year, month, day, hour, minute), entry.score]);
     });
+
+    // sort the data
+    data.sort(function(a, b) {
+      if(a[0] === b[0]) {
+        return 0;
+      }
+      else {
+        return (a[0] < b[0]) ? -1 : 1;
+      }      
+    });
+
+    // calculate average score for same-day-tweets    
+    // var filteredData = [];
+    // for(var i = 0; i < data.length; i++) {
+    //   var currentEntry = data[i];
+    //   var nextEntry = data[i+1];
+    //   // check if same date
+    //   if(currentEntry[0] === nextEntry[0]) {
+    //     // if same date, calculate the average score
+    //     var newEntry = [data[i][0], (data[i][1] + data[i+1][1]) / 2];
+    //     i++;
+    //     filteredData.push(newEntry);
+    //   }
+    // }
+
+    // pick the first tweet of the day if same-day-tweet
+
+
     return data;
   }
 }
